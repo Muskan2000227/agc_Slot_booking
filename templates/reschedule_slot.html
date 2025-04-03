@@ -1,0 +1,102 @@
+{% extends 'navbaruser.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reschedule Slot</title>
+    <style>
+
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+
+        .container {
+            background: white;
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        select, button {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        select {
+            width: 80%;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e68900;
+        }
+
+        .cancel-btn {
+            display: block;
+            margin-top: 20px;
+            color: red;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+
+
+    <div class="container">
+        <h2>Reschedule Your Slot</h2>
+        <p>Current Slot: {{ slot.start_time }} - {{ slot.end_time }}</p>
+
+        <form action="{% url 'reschedule_slot' slot.id %}" method="POST">
+            {% csrf_token %}
+            
+            <label for="new_slot">Select a New Slot:</label>
+            <select name="new_slot" required>
+                {% for available_slot in available_slots %}
+                    <option value="{{ available_slot.id }}">{{ available_slot.start_time }} - {{ available_slot.end_time }}</option>
+                {% endfor %}
+            </select>
+            
+            <br>
+        
+            <button type="submit" onclick="return confirmReschedule();">Reschedule</button>
+        </form>
+
+        <a href="{% url 'mybookedslots' %}" class="cancel-btn">Cancel & Go Back</a>
+    </div>
+
+</body>
+<script>
+    function confirmReschedule() {
+        return confirm("Are you sure you want to reschedule this slot?");
+    }
+</script>
+</html>
+{% endblock %}

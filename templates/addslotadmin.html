@@ -1,0 +1,376 @@
+{% extends 'navbaradmin.html'%}
+{% block content %}
+
+<div class="slot-container animate__animated animate__fadeIn">
+    <div class="slot-card animate__animated animate__slideInUp">
+        <h2 class="slot-header">Add New Slot</h2>
+        
+        <!-- Status Messages with animation -->
+        {% if messages.error %}
+        <div class="alert error-message animate__animated animate__fadeIn">
+            <i class="fas fa-exclamation-circle"></i> {{ messages.error }}
+        </div>
+        {% endif %}
+        {% if messages.success %}
+        <div class="alert success-message animate__animated animate__fadeIn">
+            <i class="fas fa-check-circle"></i> {{ messages.success }}
+        </div>
+        {% endif %}
+
+        <form method="post" class="slot-form">
+            {% csrf_token %}
+            
+            <!-- Start Time Input -->
+            <div class="form-group animate__animated animate__fadeInLeft" style="animation-delay: 0.1s">
+                <label for="start_time" class="form-label">
+                    <i class="far fa-clock"></i> Start Time
+                </label>
+                <input type="datetime-local" id="start_time" name="start_time" class="form-input" required>
+                <div class="time-preview">
+                    Selected Start: <span id="formatted_start_time" class="time-value">--:-- --</span>
+                </div>
+            </div>
+
+            <!-- End Time Input -->
+            <div class="form-group animate__animated animate__fadeInLeft" style="animation-delay: 0.2s">
+                <label for="end_time" class="form-label">
+                    <i class="far fa-clock"></i> End Time
+                </label>
+                <input type="datetime-local" id="end_time" name="end_time" class="form-input" required>
+                <div class="time-preview">
+                    Selected End: <span id="formatted_end_time" class="time-value">--:-- --</span>
+                </div>
+            </div>
+
+            <!-- Teacher Selection -->
+            <div class="form-group animate__animated animate__fadeInLeft" style="animation-delay: 0.3s">
+                <label for="teacher" class="form-label">
+                    <i class="fas fa-user-tie"></i> Select Teacher
+                </label>
+                <select id="teacher" name="teacher" class="form-select" required>
+                    <option value="">-- Choose Teacher --</option>
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}">{{ teacher.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="submit-btn animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                <i class="fas fa-plus-circle"></i> Add Slot
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #4F46E5;
+        --primary-light: #6366F1;
+        --success: #10B981;
+        --danger: #EF4444;
+        --light: #f8f9fa;
+        --dark: #1e293b;
+        --gray: #94a3b8;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        color: #334155;
+        overflow: hidden;
+    }
+
+    .slot-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* min-height: calc(100vh - 60px); */
+        margin-top: 30px;
+        padding: 10px;
+    }
+
+    .slot-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        width: 100%;
+        max-width: 600px;
+        transform: translateY(20px);
+        opacity: 0;
+        animation-fill-mode: forwards;
+    }
+
+    .slot-header {
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    .slot-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary), var(--success));
+        border-radius: 3px;
+    }
+
+    .alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95rem;
+        transform: scale(0.95);
+        opacity: 0;
+        animation-fill-mode: forwards;
+    }
+
+    .error-message {
+        background-color: #FEE2E2;
+        color: #B91C1C;
+        border-left: 4px solid var(--danger);
+    }
+
+    .success-message {
+        background-color: #D1FAE5;
+        color: #065F46;
+        border-left: 4px solid var(--success);
+    }
+
+    .slot-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        transform: translateX(-10px);
+        opacity: 0;
+        animation-fill-mode: forwards;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-input, .form-select {
+        padding: 12px 14px;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    .time-preview {
+        font-size: 0.9rem;
+        color: var(--gray);
+        margin-top: 4px;
+    }
+
+    .time-value {
+        font-weight: 500;
+        color: var(--dark);
+    }
+
+    .submit-btn {
+        background: linear-gradient(to right, var(--primary), var(--primary-light));
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 0.5rem;
+        transform: translateY(10px);
+        opacity: 0;
+        animation-fill-mode: forwards;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    /* Animation classes */
+    .animate__fadeIn {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .animate__slideInUp {
+        animation: slideInUp 0.5s ease-out forwards;
+    }
+
+    .animate__fadeInLeft {
+        animation: fadeInLeft 0.5s ease-out forwards;
+    }
+
+    .animate__fadeInUp {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideInUp {
+        from { 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInLeft {
+        from { 
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from { 
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .slot-card {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .slot-card {
+            padding: 1.2rem;
+        }
+        
+        .slot-header {
+            font-size: 1.4rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function setMinDateTime() {
+            let now = new Date();
+
+            // Round minutes up to avoid past selection issues
+            now.setMinutes(now.getMinutes() + 1);
+            now.setSeconds(0);
+
+            let year = now.getFullYear();
+            let month = String(now.getMonth() + 1).padStart(2, "0");
+            let day = String(now.getDate()).padStart(2, "0");
+            let hours = String(now.getHours()).padStart(2, "0");
+            let minutes = String(now.getMinutes()).padStart(2, "0");
+
+            let minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            document.getElementById("start_time").setAttribute("min", minDateTime);
+            document.getElementById("end_time").setAttribute("min", minDateTime);
+        }
+
+        function formatTo12Hour(dateTimeString) {
+            let dateObj = new Date(dateTimeString);
+            let hours = dateObj.getHours();
+            let minutes = dateObj.getMinutes();
+            let ampm = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12 || 12; // Convert 0 or 12 to 12 AM/PM format
+            minutes = String(minutes).padStart(2, "0");
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        function updateEndTime() {
+            let startInput = document.getElementById("start_time");
+            let endInput = document.getElementById("end_time");
+
+            let selectedStartTime = new Date(startInput.value);
+
+            if (!isNaN(selectedStartTime.getTime())) {
+                let endTime = new Date(selectedStartTime.getTime() + 30 * 60000); // Add 30 minutes
+                let year = endTime.getFullYear();
+                let month = String(endTime.getMonth() + 1).padStart(2, "0");
+                let day = String(endTime.getDate()).padStart(2, "0");
+                let hours = String(endTime.getHours()).padStart(2, "0");
+                let minutes = String(endTime.getMinutes()).padStart(2, "0");
+
+                let formattedEndTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                endInput.value = formattedEndTime;
+
+                // Update display
+                document.getElementById("formatted_start_time").textContent = formatTo12Hour(startInput.value);
+                document.getElementById("formatted_end_time").textContent = formatTo12Hour(formattedEndTime);
+            }
+        }
+
+        setMinDateTime();
+
+        document.getElementById("start_time").addEventListener("focus", setMinDateTime);
+        document.getElementById("start_time").addEventListener("change", updateEndTime);
+        
+        // Add ripple effect to submit button
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.addEventListener('click', function(e) {
+            let x = e.clientX - e.target.getBoundingClientRect().left;
+            let y = e.clientY - e.target.getBoundingClientRect().top;
+            
+            let ripple = document.createElement('span');
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 1000);
+        });
+    });
+</script>
+
+{% endblock %}
